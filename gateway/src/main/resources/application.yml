@@ -1,0 +1,51 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: gateway
+
+  cloud:
+    gateway:
+      routes:
+        - id: usuarios-mvs
+          uri: lb://usuarios-mvs
+          predicates:
+            - Path=/api/usuarios/**
+          filters:
+            - StripPrefix=2
+
+        - id: huespedes-mvs
+          uri: lb://huespedes-mvs
+          predicates:
+            - Path=/api/huespedes/**
+          filters:
+            - StripPrefix=2
+
+        - id: habitaciones-mvs
+          uri: lb://habitaciones-mvs
+          predicates:
+            - Path=/api/habitaciones/**
+          filters:
+            - StripPrefix=2
+
+        - id: reservas-mvs
+          uri: lb://reservas-mvs
+          predicates:
+            - Path=/api/reservas/**
+          filters:
+            - StripPrefix=2
+
+    loadbalancer:
+      enabled: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
