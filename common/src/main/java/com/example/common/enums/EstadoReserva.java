@@ -3,6 +3,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
+//enums
 public enum EstadoReserva {
 	
 	PENDIENTE(1L, "Pendiente"),
