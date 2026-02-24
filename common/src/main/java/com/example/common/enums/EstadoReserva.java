@@ -1,23 +1,23 @@
-package com.example.common.enums;import lombok.AllArgsConstructor;
+package com.example.common.enums;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
 public enum EstadoReserva {
-	
-	PENDIENTE(1L, "Pendiente"),
-    CONFIRMADA(2L, "Confirmada"),
-    EN_CURSO(3L, "En curso"),
-    FINALIZADA(4L, "Finalizada"),
-    CANCELADA(5L, "Cancelada"),
-    NO_SHOW(6L, "No se presentó");
+
+    CONFIRMADA(1L, "Confirmada"),
+    EN_CURSO(2L, "En curso"),
+    FINALIZADA(3L, "Finalizada"),
+    CANCELADA(4L, "Cancelada");
 
     private final Long codigo;
     private final String descripcion;
 
     public static EstadoReserva fromCodigo(Long codigo) {
         for (EstadoReserva e : values()) {
-        	if (e.codigo.equals(codigo)) {
+            if (e.codigo.equals(codigo)) {
                 return e;
             }
         }
@@ -43,5 +43,3 @@ public enum EstadoReserva {
                 .replace("ú", "u").replace("Ú", "U");
     }
 }
-
-
