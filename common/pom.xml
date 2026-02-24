@@ -51,13 +51,7 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>com.slfonso</groupId>
-            <artifactId>auhtorization-server</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-
+        
     </dependencies>
 
     <!-- 🔥 AGREGADO PARA FEIGN -->
