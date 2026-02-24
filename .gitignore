@@ -1,0 +1,41 @@
+# === Java ===
+*.class
+*.jar
+*.war
+*.ear
+
+# === Directorios de compilación ===
+bin/
+build/
+target/
+
+# === Eclipse ===
+.project
+.classpath
+.settings/
+
+# === IntelliJ IDEA ===
+.idea/
+*.iml
+
+# === Logs ===
+*.log
+
+# === Archivos temporales ===
+*.tmp
+*.swp
+
+# === Archivos del sistema ===
+.DS_Store
+Thumbs.db
+
+# === Maven ===
+.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
+
+# === Gradle ===
+.gradle/
+build/
+
+# === Node (si usas frontend dentro del repo) ===
+node_modules/
