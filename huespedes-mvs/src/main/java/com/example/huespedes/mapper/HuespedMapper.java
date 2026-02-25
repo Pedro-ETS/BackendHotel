@@ -2,8 +2,9 @@ package com.example.huespedes.mapper;
 
 import org.springframework.stereotype.Component;
 
-import com.example.common.dto.huespede.HuespedRequest;
-import com.example.common.dto.huespede.HuespedResponse;
+
+import com.example.common.dto.huesped.HuespedRequest;
+import com.example.common.dto.huesped.HuespedResponse;
 import com.example.common.enums.EstadoRegistro;
 import com.example.common.mapper.CommonMapper;
 import com.example.huespedes.entity.Huesped;

@@ -4,8 +4,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.example.common.dto.huespede.HuespedRequest;
-import com.example.common.dto.huespede.HuespedResponse;
+import com.example.common.dto.huesped.HuespedRequest;
+import com.example.common.dto.huesped.HuespedResponse;
+import com.example.common.enums.EstadoRegistro;
 import com.example.huespedes.mapper.HuespedMapper;
 import com.example.huespedes.repository.HuespedRepository;
 
@@ -27,6 +28,7 @@ public class HuespedServiceImpl implements HuespedService{
 	public List<HuespedResponse> listar() {
 		// TODO Auto-generated method stub
 		return null;
+
 	}
 
 	@Override
