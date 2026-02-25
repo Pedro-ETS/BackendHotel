@@ -3,7 +3,6 @@ package com.example.reservas.controllers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.common.controller.CommonController;
@@ -15,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/reservas")
 public class ReservaController extends CommonController<ReservaRequest, ReservaResponse, ReservaService> {
 
     public ReservaController(ReservaService service) {
