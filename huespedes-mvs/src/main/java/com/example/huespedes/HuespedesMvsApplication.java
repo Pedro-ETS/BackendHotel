@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @EnableDiscoveryClient
 @EnableFeignClients
-@SpringBootApplication(scanBasePackages = {"com.example.huespedes", "com.example.commons",})
+@SpringBootApplication(scanBasePackages = {"com.example.huespedes", "com.example.common"})
 public class HuespedesMvsApplication {
 
 	public static void main(String[] args) {
