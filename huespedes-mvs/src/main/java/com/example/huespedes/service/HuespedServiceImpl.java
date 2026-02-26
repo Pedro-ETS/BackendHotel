@@ -27,6 +27,7 @@ public class HuespedServiceImpl implements HuespedService{
 	
 	private final HuespedRepository huespedRepository;
 	private final HuespedMapper huespedMapper;
+	
 
 	@Override
 	public List<HuespedResponse> listar() {
@@ -99,7 +100,16 @@ public class HuespedServiceImpl implements HuespedService{
 		
 		Huesped huesped = getHuespedOrThrow(id);
 		
-		//citaClient.pacienteTieneConsultasConfirmadasOEnCurso(id);  Fakta cambiarlo con reservas para que valide que no tenga una reservacion
+//		if (tieneCitasActivas(id)) {
+//
+//            String estados = EstadoCita.CONFIRMADA.getDescripcion()
+//                    + " o "
+//                    + EstadoCita.EN_CURSO.getDescripcion();
+//
+//            throw new EntidadRelacionadaException(
+//                "No se puede eliminar el médico porque tiene citas " + estados
+//            );
+//        }
 		
 		log.info("Eliminando huesped con id: {}", id);
 		
@@ -155,6 +165,10 @@ public class HuespedServiceImpl implements HuespedService{
 				throw new EntidadRelacionadaException("Ya existe un huesped registrado con el documento: " + request.documento());
 			}
 		}
+		
+		 //private boolean tieneCitasActivas(Long medicoId) {
+		  //      return Boolean.TRUE.equals(citaClient.tieneCitasActivas(medicoId));
+		   // }
 	   
 
 }
