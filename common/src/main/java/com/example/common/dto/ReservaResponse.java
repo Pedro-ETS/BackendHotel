@@ -25,8 +25,8 @@ public record ReservaResponse(
         Long id,
         Integer numero,
         String tipo,
-        Double precio,
+        String precio,
         Integer capacidad,
-        String estado
+        String estadoHabitacion
     ) {}
 }

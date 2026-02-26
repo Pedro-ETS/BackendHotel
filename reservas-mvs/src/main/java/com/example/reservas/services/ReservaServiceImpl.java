@@ -7,8 +7,12 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.common.clients.HabitacionClient;
+import com.example.common.clients.HuespedClient;
+import com.example.common.dto.HabitacionResponse;
 import com.example.common.dto.ReservaRequest;
 import com.example.common.dto.ReservaResponse;
+import com.example.common.dto.huesped.HuespedResponse;
 import com.example.common.enums.EstadoRegistro;
 import com.example.common.enums.EstadoReserva;
 import com.example.reservas.entities.Reserva;
@@ -25,7 +29,12 @@ public class ReservaServiceImpl implements ReservaService {
 
     private final ReservaRepository reservaRepository;
     private final ReservaMapper reservaMapper;
-    // TODO: agregar HuespedClient y HabitacionClient cuando estén listos
+    private final HuespedClient huespedClient;
+    private final HabitacionClient habitacionClient;
+
+    // Códigos de EstadoHabitacion
+    private static final Long DISPONIBLE = 1L;
+    private static final Long OCUPADA = 2L;
 
     @Override
     @Transactional(readOnly = true)
@@ -35,9 +44,8 @@ public class ReservaServiceImpl implements ReservaService {
                 .stream()
                 .map(reserva -> reservaMapper.entityToResponse(
                         reserva,
-                        null, // TODO: obtenerHuesped(reserva.getIdHuesped())
-                        null  // TODO: obtenerHabitacion(reserva.getIdHabitacion())
-                ))
+                        huespedClient.obtenerHuespedPorId(reserva.getIdHuesped()),
+                        habitacionClient.obtenerHabitacionPorId(reserva.getIdHabitacion())))
                 .collect(Collectors.toList());
     }
 
@@ -48,9 +56,8 @@ public class ReservaServiceImpl implements ReservaService {
         Reserva reserva = getReservaActivaOrThrow(id);
         return reservaMapper.entityToResponse(
                 reserva,
-                null, // TODO: obtenerHuesped(reserva.getIdHuesped())
-                null  // TODO: obtenerHabitacion(reserva.getIdHabitacion())
-        );
+                huespedClient.obtenerHuespedPorId(reserva.getIdHuesped()),
+                habitacionClient.obtenerHabitacionPorId(reserva.getIdHabitacion()));
     }
 
     @Override
@@ -58,14 +65,20 @@ public class ReservaServiceImpl implements ReservaService {
     public ReservaResponse registrar(ReservaRequest request) {
         log.info("Registrando nueva reserva");
 
-        // TODO: Validar que el huésped existe y está ACTIVO
-        // HuespedResponse huesped = huespedClient.obtenerHuespedPorId(request.idHuesped());
+        // Validar que el huésped existe y está ACTIVO
+        HuespedResponse huesped = huespedClient.obtenerHuespedPorId(request.idHuesped());
+        if (huesped.estado() != EstadoRegistro.ACTIVO) {
+            throw new IllegalStateException("El huésped no está activo");
+        }
 
-        // TODO: Validar que la habitación existe, está ACTIVA y DISPONIBLE
-        // HabitacionResponse habitacion = habitacionClient.obtenerHabitacionPorId(request.idHabitacion());
-        // if (!"DISPONIBLE".equals(habitacion.estado())) {
-        //     throw new IllegalStateException("La habitación no está disponible");
-        // }
+        // Validar que la habitación existe, está ACTIVA y DISPONIBLE
+        HabitacionResponse habitacion = habitacionClient.obtenerHabitacionPorId(request.idHabitacion());
+        if (!"ACTIVO".equals(habitacion.estadoRegistro())) {
+            throw new IllegalStateException("La habitación no está activa");
+        }
+        if (!"DISPONIBLE".equals(habitacion.estadoHabitacion())) {
+            throw new IllegalStateException("La habitación no está disponible");
+        }
 
         // Validar fechas
         validarFechas(request.fechaEntrada(), request.fechaSalida());
@@ -74,16 +87,15 @@ public class ReservaServiceImpl implements ReservaService {
         Reserva reserva = reservaMapper.requestToEntity(request);
         Reserva reservaGuardada = reservaRepository.save(reserva);
 
-        // TODO: Cambiar habitación a OCUPADA
-        // habitacionClient.cambiarEstadoHabitacion(request.idHabitacion(), 2);
+        // Cambiar habitación a OCUPADA
+        habitacionClient.cambiarEstadoHabitacion(request.idHabitacion(), OCUPADA);
 
         log.info("Reserva registrada exitosamente con id: {}", reservaGuardada.getId());
 
         return reservaMapper.entityToResponse(
                 reservaGuardada,
-                null, // TODO: huesped
-                null  // TODO: habitacion
-        );
+                huesped,
+                habitacionClient.obtenerHabitacionPorId(request.idHabitacion()));
     }
 
     @Override
@@ -118,9 +130,8 @@ public class ReservaServiceImpl implements ReservaService {
 
         return reservaMapper.entityToResponse(
                 reservaActualizada,
-                null, // TODO: obtenerHuesped
-                null  // TODO: obtenerHabitacion
-        );
+                huespedClient.obtenerHuespedPorId(reservaActualizada.getIdHuesped()),
+                habitacionClient.obtenerHabitacionPorId(reservaActualizada.getIdHabitacion()));
     }
 
     @Override
@@ -152,25 +163,23 @@ public class ReservaServiceImpl implements ReservaService {
         EstadoReserva estadoActual = reserva.getEstadoReserva();
         EstadoReserva estadoNuevo = EstadoReserva.fromCodigo(idEstado.longValue());
 
-        // Validar transiciones
+        // Validar transición
         validarTransicion(estadoActual, estadoNuevo);
 
         reserva.setEstadoReserva(estadoNuevo);
         reservaRepository.save(reserva);
 
         // Actualizar habitación según el nuevo estado
-        // TODO: cuando HabitacionClient esté listo
-        // if (estadoNuevo == EstadoReserva.FINALIZADA || estadoNuevo == EstadoReserva.CANCELADA) {
-        //     habitacionClient.cambiarEstadoHabitacion(reserva.getIdHabitacion(), 1); // DISPONIBLE
-        // }
+        if (estadoNuevo == EstadoReserva.FINALIZADA || estadoNuevo == EstadoReserva.CANCELADA) {
+            habitacionClient.cambiarEstadoHabitacion(reserva.getIdHabitacion(), DISPONIBLE);
+        }
 
         log.info("Estado de reserva {} cambiado a {}", idReserva, estadoNuevo.getDescripcion());
 
         return reservaMapper.entityToResponse(
                 reserva,
-                null, // TODO: obtenerHuesped
-                null  // TODO: obtenerHabitacion
-        );
+                huespedClient.obtenerHuespedPorId(reserva.getIdHuesped()),
+                habitacionClient.obtenerHabitacionPorId(reserva.getIdHabitacion()));
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -184,9 +193,6 @@ public class ReservaServiceImpl implements ReservaService {
     }
 
     private void validarFechas(String fechaEntrada, String fechaSalida) {
-        // Validar formato dd/MM/yyyy y que fechaEntrada < fechaSalida
-        // Como las fechas son String comparamos lexicográficamente en formato yyyy/MM/dd
-        // Por eso convertimos antes de comparar
         String[] entrada = fechaEntrada.split("/");
         String[] salida = fechaSalida.split("/");
 
@@ -194,15 +200,14 @@ public class ReservaServiceImpl implements ReservaService {
         String salidaComparable = salida[2] + salida[1] + salida[0];
 
         if (entradaComparable.compareTo(salidaComparable) >= 0) {
-            throw new IllegalArgumentException("La fecha de entrada debe ser anterior a la fecha de salida");
+            throw new IllegalArgumentException(
+                    "La fecha de entrada debe ser anterior a la fecha de salida");
         }
     }
-    
-    //Aca yo hare cambios haahhahahahahahahahaha
 
     private void validarTransicion(EstadoReserva actual, EstadoReserva nuevo) {
         boolean valida = switch (actual) {
-            case CONFIRMADA -> nuevo == EstadoReserva.EN_CURSO || 
+            case CONFIRMADA -> nuevo == EstadoReserva.EN_CURSO ||
                                nuevo == EstadoReserva.CANCELADA;
             case EN_CURSO -> nuevo == EstadoReserva.FINALIZADA;
             case FINALIZADA, CANCELADA -> false;

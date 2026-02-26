@@ -4,6 +4,8 @@ import com.example.common.dto.HabitacionResponse;
 import com.example.habitaciones.dtos.HabitacionRequest;
 import com.example.habitaciones.services.HabitacionService;
 import com.example.common.controller.CommonController;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -12,4 +14,12 @@ public class HabitacionController extends CommonController<HabitacionRequest, Ha
     public HabitacionController(HabitacionService service) {
         super(service);
     }
+    
+    @PutMapping("/{id}/estado/{idEstado}")
+    public ResponseEntity<HabitacionResponse> cambiarEstado(
+            @PathVariable Long id,
+            @PathVariable Long idEstado) {
+        return ResponseEntity.ok(service.cambiarEstadoHabitacion(id, idEstado));
+    }
+    
 }
