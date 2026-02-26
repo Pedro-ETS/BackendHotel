@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @EnableDiscoveryClient
 @EnableFeignClients
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.example.reservas", "com.example.commons",})
 public class ReservasMvsApplication {
 
 	public static void main(String[] args) {

@@ -3,7 +3,8 @@ package com.example.reservas.mappers;
 import org.springframework.stereotype.Component;
 
 import com.example.common.dto.ReservaRequest;
-import com.example.common.dto.ReservaResponse;
+//import com.example.common.dto.ReservaResponse;
+//import com.example.common.dto.huesped.HuespedResponse;
 import com.example.common.enums.EstadoRegistro;
 import com.example.common.enums.EstadoReserva;
 import com.example.reservas.entities.Reserva;
@@ -21,22 +22,40 @@ public class ReservaMapper {
                 .estadoRegistro(EstadoRegistro.ACTIVO)
                 .build();
     }
-
+/*
     public ReservaResponse entityToResponse(Reserva entity,
-            ReservaResponse.HuespedDTO huesped,
-            ReservaResponse.HabitacionDTO habitacion) {
+    		HuespedResponse huesped,
+    		HabitacionResponse habitacion) {
 
-        return new ReservaResponse(
-                entity.getId(),
-                huesped,
-                habitacion,
-                entity.getFechaEntrada(),
-                entity.getFechaSalida(),
-                entity.getEstadoReserva().getDescripcion(),
-                entity.getEstadoRegistro().name()
-        );
+    	 ReservaResponse.HuespedDTO huespedDTO = new ReservaResponse.HuespedDTO(
+                 huesped.id(),
+                 huesped.nombre(),
+                 huesped.email(),
+                 huesped.telefono(),
+                 huesped.documento(),
+                 huesped.nacionalidad()
+         );
+    	 
+    	 ReservaResponse.HabitacionDTO habitacionDTO = new ReservaResponse.HabitacionDTO(
+                 habitacion.getIdHabitacion(),
+                 habitacion.getNumero(),
+                 habitacion.getTipo(),
+                 habitacion.getPrecio().toString(),
+                 habitacion.getCapacidad(),
+                 habitacion.getEstadoHabitacion()
+         );
+    	 
+    	 return new ReservaResponse(
+                 entity.getId(),
+                 huespedDTO,
+                 habitacionDTO,
+                 entity.getFechaEntrada(),
+                 entity.getFechaSalida(),
+                 entity.getEstadoReserva().getDescripcion(),
+                 entity.getEstadoRegistro().name()
+         );
     }
-
+*/
     public void updateEntity(ReservaRequest request, Reserva entity) {
         entity.setFechaEntrada(request.fechaEntrada());
         entity.setFechaSalida(request.fechaSalida());

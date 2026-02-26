@@ -14,17 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-public class ReservaController extends CommonController<ReservaRequest, ReservaResponse, ReservaService> {
+public class ReservaController {
 
-    public ReservaController(ReservaService service) {
-        super(service);
-    }
-
-    @PatchMapping("/{idReserva}/estado/{idEstado}")
-    public ResponseEntity<ReservaResponse> cambiarEstado(
-            @PathVariable Long idReserva,
-            @PathVariable Integer idEstado) {
-        log.info("Cambiando estado de reserva {} a {}", idReserva, idEstado);
-        return ResponseEntity.ok(service.cambiarEstado(idReserva, idEstado));
-    }
+   
 }
