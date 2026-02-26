@@ -197,6 +197,8 @@ public class ReservaServiceImpl implements ReservaService {
             throw new IllegalArgumentException("La fecha de entrada debe ser anterior a la fecha de salida");
         }
     }
+    
+    //Aca yo hare cambios haahhahahahahahahahaha
 
     private void validarTransicion(EstadoReserva actual, EstadoReserva nuevo) {
         boolean valida = switch (actual) {
