@@ -1,0 +1,15 @@
+package com.example.habitaciones.controller;
+
+import com.example.common.dto.HabitacionResponse;
+import com.example.habitaciones.dtos.HabitacionRequest;
+import com.example.habitaciones.services.HabitacionService;
+import com.example.common.controller.CommonController;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+public class HabitacionController extends CommonController<HabitacionRequest, HabitacionResponse, HabitacionService> {
+
+    public HabitacionController(HabitacionService service) {
+        super(service);
+    }
+}
