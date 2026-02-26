@@ -7,6 +7,6 @@ import com.example.common.services.CrudServices;
 
 public interface HuespedService extends CrudServices<HuespedRequest, HuespedResponse >{
 
-	
+	HuespedResponse obtenerHuespedPorIdSinEstado(Long id);
 
 }

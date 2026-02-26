@@ -1,5 +1,8 @@
 package com.example.huespedes.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.common.controller.CommonController;
@@ -14,6 +17,11 @@ public class HuespedController extends CommonController<HuespedRequest, HuespedR
 	public HuespedController(HuespedService service) {
 		super(service);
 		// TODO Auto-generated constructor stub
+	}
+	
+	@GetMapping("/id-huesped/{id}")
+	public ResponseEntity<HuespedResponse> obtenerHuespedPorIdSinEstado(@PathVariable Long id){
+		return ResponseEntity.ok(service.obtenerHuespedPorIdSinEstado(id));
 	}
 
 }
