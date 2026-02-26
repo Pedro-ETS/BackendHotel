@@ -8,7 +8,7 @@ import com.example.common.dto.huesped.HuespedResponse;
 
 
 
-@FeignClient(name = "huespedes-msv")
+@FeignClient(name = "huespedes-mvs")
 public interface HuespedClient {
 	
 	@GetMapping("/{id}")
