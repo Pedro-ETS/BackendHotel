@@ -21,11 +21,11 @@ public record HuespedRequest(
 		
 		@NotBlank(message = "El email es obligatorio")
 		@Size(max = 100, message = "El email solo puede contener 100 caracteres")
-        @Email(message = "El email debe tener un formato valido (ejemplo.com)")
+        @Email(message = "El email debe tener un formato valido (ejemplo@correo.com)")
 		String email,
 		
 		@NotBlank(message = "El telefono es obligatorio")
-        @Pattern(regexp = "^[0-9]{10}$", message = "El teléfono debe contener solo 10 caracteres")
+        @Pattern(regexp = "^[0-9]{10}$", message = "El teléfono debe contener solo 10 digitos")
         String telefono,
         
         @NotBlank(message = "El documento es obligatorio")
