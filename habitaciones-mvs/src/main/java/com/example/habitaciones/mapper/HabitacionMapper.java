@@ -12,10 +12,10 @@ public class HabitacionMapper {
 
     public Habitacion requestToEntity(HabitacionRequest request) {
         Habitacion habitacion = new Habitacion();
-        habitacion.setNumero(request.numero());
-        habitacion.setTipo(request.tipo());
-        habitacion.setPrecio(request.precio());
-        habitacion.setCapacidad(request.capacidad());
+        habitacion.setNumero(request.numero());           
+        habitacion.setTipo(request.tipo());               
+        habitacion.setPrecio(request.precio());           
+        habitacion.setCapacidad(request.capacidad());     
         habitacion.setEstadoHabitacion(EstadoHabitacion.DISPONIBLE);
         habitacion.setEstadoRegistro(EstadoRegistro.ACTIVO);
         return habitacion;
@@ -34,9 +34,9 @@ public class HabitacionMapper {
     }
 
     public void updateEntityFromRequest(HabitacionRequest request, Habitacion entity) {
-        entity.setNumero(request.numero());
-        entity.setTipo(request.tipo());
-        entity.setPrecio(request.precio());
-        entity.setCapacidad(request.capacidad());
+        entity.setNumero(request.numero());              
+        entity.setTipo(request.tipo());                   
+        entity.setPrecio(request.precio());               
+        entity.setCapacidad(request.capacidad());       
     }
 }
