@@ -15,11 +15,16 @@ public class HabitacionController extends CommonController<HabitacionRequest, Ha
         super(service);
     }
     
-    @PutMapping("/{id}/estado/{idEstado}")
-    public ResponseEntity<HabitacionResponse> cambiarEstado(
+    @PatchMapping("/{id}/estado/{idEstado}")
+    public ResponseEntity<HabitacionResponse> cambiarEstado(	
             @PathVariable Long id,
             @PathVariable Long idEstado) {
         return ResponseEntity.ok(service.cambiarEstadoHabitacion(id, idEstado));
     }
+    
+    @GetMapping("/id-habitacion/{id}")
+	public ResponseEntity<HabitacionResponse> obtenerHabitacionPorIdSinEstado(@PathVariable Long id){
+		return ResponseEntity.ok(service.obtenerHabitacionPorIdSinEstado(id));
+	}
     
 }

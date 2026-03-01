@@ -2,6 +2,8 @@ package com.example.common.dto;
 
 import java.math.BigDecimal;
 
+import com.example.common.enums.EstadoRegistro;
+
 public record HabitacionResponse(
     Long idHabitacion,
     Integer numero,
@@ -9,5 +11,5 @@ public record HabitacionResponse(
     BigDecimal precio,
     Integer capacidad,
     String estadoHabitacion,
-    String estadoRegistro
+    EstadoRegistro estadoRegistro
 ) {}

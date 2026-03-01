@@ -16,4 +16,6 @@ public interface HabitacionService extends CrudServices<HabitacionRequest, Habit
     List<HabitacionResponse> listarDisponibles();
     
     boolean validarDisponibilidad(Long idHabitacion);
+    
+ 
 }

@@ -18,7 +18,7 @@ public enum EstadoHabitacion {
 
 	    public static EstadoHabitacion fromCodigo(Long codigo) {
 	        for (EstadoHabitacion e : values()) {
-	            if (e.codigo == codigo) {
+	        	if (e.codigo.equals(codigo)) {
 	                return e;
 	            }
 	        }
