@@ -23,15 +23,14 @@ public class HuespedMapper implements CommonMapper <HuespedRequest, HuespedRespo
 		
 		return new HuespedResponse(
 				entity.getId(),
-				String.join(" ", 
-						entity.getNombre(),
-						entity.getApellidoPaterno(),
-						entity.getApellidoMaterno()),
-				entity.getEmail(),
-				entity.getTelefono(),
-				entity.getDocumento(),
-				entity.getNacionalidad(),
-				entity.getEstadoRegistro());
+			    entity.getNombre(),
+			    entity.getApellidoPaterno(),
+			    entity.getApellidoMaterno(),
+			    entity.getEmail(),
+			    entity.getTelefono(),
+			    entity.getDocumento(),
+			    entity.getNacionalidad(),
+			    entity.getEstadoRegistro());
 	}
 
 	@Override

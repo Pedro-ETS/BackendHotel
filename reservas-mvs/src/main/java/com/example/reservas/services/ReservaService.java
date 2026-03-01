@@ -7,4 +7,8 @@ import com.example.common.services.CrudServices;
 public interface ReservaService extends CrudServices<ReservaRequest, ReservaResponse> {
 
     ReservaResponse cambiarEstado(Long idReserva, Integer idEstado);
+    
+    Boolean huespedTieneReservasActivas(Long idHuesped);
+    
+    Boolean habitacionTieneReservasActivas(Long idHabitacion);
 }

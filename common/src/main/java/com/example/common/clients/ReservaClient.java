@@ -9,5 +9,8 @@ public interface ReservaClient {
 	
 	@GetMapping("/huesped/{idHuesped}/tiene-activas")
 	Boolean huespedTieneReservasActivas(@PathVariable Long idHuesped);
+	
+	@GetMapping("/habitacion/{idHabitacion}/tiene-activas")
+	Boolean habitacionTieneReservasActivas(@PathVariable Long idHabitacion);
 
 }

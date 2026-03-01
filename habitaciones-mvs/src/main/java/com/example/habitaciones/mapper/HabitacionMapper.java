@@ -29,7 +29,7 @@ public class HabitacionMapper {
             entity.getPrecio(),
             entity.getCapacidad(),
             entity.getEstadoHabitacion().name(),
-            entity.getEstadoRegistro().name()
+            entity.getEstadoRegistro()
         );
     }
 

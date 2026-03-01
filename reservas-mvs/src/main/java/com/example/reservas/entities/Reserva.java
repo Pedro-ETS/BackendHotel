@@ -1,6 +1,8 @@
 package com.example.reservas.entities;
 
 
+import java.time.LocalDateTime;
+
 import com.example.common.enums.EstadoRegistro;
 import com.example.common.enums.EstadoReserva;
 
@@ -40,11 +42,11 @@ public class Reserva {
     @Column(name = "ID_HABITACION", nullable = false)
     private Long idHabitacion;
 
-    @Column(name = "FECHA_ENTRADA", nullable = false, length = 20)
-    private String fechaEntrada;
+    @Column(name = "FECHA_ENTRADA", nullable = false)
+    private LocalDateTime fechaEntrada;
 
-    @Column(name = "FECHA_SALIDA", nullable = false, length = 20)
-    private String fechaSalida;
+    @Column(name = "FECHA_SALIDA", nullable = false)
+    private LocalDateTime fechaSalida;
 
     @Column(name = "ESTADO_RESERVA", nullable = false, length = 15)
     @Enumerated(EnumType.STRING)

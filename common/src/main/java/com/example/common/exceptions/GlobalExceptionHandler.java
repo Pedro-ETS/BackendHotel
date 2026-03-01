@@ -5,17 +5,21 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.example.common.dto.ErrorResponse;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 import feign.FeignException;
 import feign.RetryableException;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestControllerAdvice
@@ -106,5 +110,28 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ErrorResponse(HttpStatus.CONFLICT.value(), e.getMessage()));
     }
+    
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, String>> handleJsonParseError(
+            HttpMessageNotReadableException ex) {
+
+        Map<String, String> error = new HashMap<>();
+
+        if (ex.getCause() instanceof InvalidFormatException invalidFormat) {
+
+            if (invalidFormat.getTargetType().equals(LocalDateTime.class)) {
+                error.put("error",
+                        "Formato de fecha inválido. Use formato: yyyy-MM-ddTHH:mm:ss");
+            } else {
+                error.put("error", "Formato de dato inválido.");
+            }
+
+        } else {
+            error.put("error", "El cuerpo de la solicitud es inválido.");
+        }
+
+        return ResponseEntity.badRequest().body(error);
+    }
+    
 
 }

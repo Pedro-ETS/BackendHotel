@@ -1,13 +1,14 @@
 package com.example.habitaciones.services;
 
+import com.example.common.clients.ReservaClient;
 import com.example.common.dto.HabitacionResponse;
 import com.example.common.enums.EstadoHabitacion;
 import com.example.common.enums.EstadoRegistro;
+import com.example.common.exceptions.EntidadRelacionadaException;
 import com.example.habitaciones.dtos.HabitacionRequest;
 import com.example.habitaciones.entities.Habitacion;
 import com.example.habitaciones.mapper.HabitacionMapper;
 import com.example.habitaciones.repositories.HabitacionRepository;
-//import com.example.habitaciones.services.HabitacionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class HabitacionServiceImpl implements HabitacionService {
 
     private final HabitacionRepository habitacionRepository;
     private final HabitacionMapper habitacionMapper;
+    private final ReservaClient reservaClient;
 
     @Override
     @Transactional(readOnly = true)
@@ -93,6 +95,14 @@ public class HabitacionServiceImpl implements HabitacionService {
                 .orElseThrow(() -> new NoSuchElementException("No se encontró habitación activa con ID: " + idHabitacion));
 
         EstadoHabitacion nuevoEstado = EstadoHabitacion.fromCodigo(idEstado);
+        
+        if (habitacion.getEstadoHabitacion() == EstadoHabitacion.OCUPADA
+                && nuevoEstado == EstadoHabitacion.DISPONIBLE) {
+
+            throw new EntidadRelacionadaException(
+                    "No se puede cambiar la habitación a DISPONIBLE porque actualmente está OCUPADA");
+        }
+        
         habitacion.setEstadoHabitacion(nuevoEstado);
         habitacion = habitacionRepository.save(habitacion);
 
@@ -138,11 +148,24 @@ public class HabitacionServiceImpl implements HabitacionService {
 
     @Override
     public void eliminar(Long id) {
+
         log.info("Eliminando (lógico) habitación con ID: {}", id);
 
         Habitacion habitacion = habitacionRepository.findById(id)
                 .filter(h -> h.getEstadoRegistro() == EstadoRegistro.ACTIVO)
-                .orElseThrow(() -> new NoSuchElementException("No se encontró habitación activa con ID: " + id));
+                .orElseThrow(() ->
+                        new NoSuchElementException("No se encontró habitación activa con ID: " + id)
+                );
+        if (habitacion.getEstadoHabitacion() == EstadoHabitacion.OCUPADA) {
+            throw new EntidadRelacionadaException(
+                    "No se puede eliminar la habitación porque actualmente está OCUPADA"
+            );
+        }
+        if (tieneReservasActivas(id)) {
+            throw new EntidadRelacionadaException(
+                    "No se puede eliminar la habitación porque tiene reservas activas"
+            );
+        }
 
         habitacion.setEstadoRegistro(EstadoRegistro.ELIMINADO);
         habitacionRepository.save(habitacion);
@@ -152,15 +175,31 @@ public class HabitacionServiceImpl implements HabitacionService {
 
     private void validarNumeroUnico(Integer numero, Long idExcluir) {
         if (idExcluir == null) {
-            if (habitacionRepository.existsByNumero(numero)) {
-                throw new IllegalArgumentException("Ya existe una habitación con el número: " + numero);
+            if (habitacionRepository.existsByNumeroAndEstadoRegistro(
+                    numero,
+                    EstadoRegistro.ACTIVO)) {
+
+                throw new EntidadRelacionadaException(
+                        "Ya existe una habitación con el número: " + numero);
             }
-        } else {
-            habitacionRepository.findByNumero(numero).ifPresent(habitacionExistente -> {
-                if (!habitacionExistente.getIdHabitacion().equals(idExcluir)) {
-                    throw new IllegalArgumentException("Ya existe otra habitación con el número: " + numero);
-                }
-            });
+
+        } 
+        else {
+            if (habitacionRepository.existsByNumeroAndIdHabitacionNotAndEstadoRegistro(
+                    numero,
+                    idExcluir,
+                    EstadoRegistro.ACTIVO)) {
+
+                throw new EntidadRelacionadaException(
+                        "Ya existe otra habitación con el número: " + numero);
+            }
         }
     }
+    
+    private boolean tieneReservasActivas(Long idHabitacion) {
+        return Boolean.TRUE.equals(
+            reservaClient.habitacionTieneReservasActivas(idHabitacion)
+        );
+    }
+    
 }

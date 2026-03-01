@@ -5,10 +5,11 @@ import java.util.NoSuchElementException;
 
 import org.springframework.stereotype.Service;
 
-
+import com.example.common.clients.ReservaClient;
 import com.example.common.dto.huesped.HuespedRequest;
 import com.example.common.dto.huesped.HuespedResponse;
 import com.example.common.enums.EstadoRegistro;
+import com.example.common.enums.EstadoReserva;
 import com.example.common.exceptions.EntidadRelacionadaException;
 import com.example.huespedes.entity.Huesped;
 import com.example.huespedes.mapper.HuespedMapper;
@@ -27,6 +28,7 @@ public class HuespedServiceImpl implements HuespedService{
 	
 	private final HuespedRepository huespedRepository;
 	private final HuespedMapper huespedMapper;
+	private final ReservaClient reservacClient;
 	
 
 	@Override
@@ -100,16 +102,14 @@ public class HuespedServiceImpl implements HuespedService{
 		
 		Huesped huesped = getHuespedOrThrow(id);
 		
-//		if (tieneCitasActivas(id)) {
-//
-//            String estados = EstadoCita.CONFIRMADA.getDescripcion()
-//                    + " o "
-//                    + EstadoCita.EN_CURSO.getDescripcion();
-//
-//            throw new EntidadRelacionadaException(
-//                "No se puede eliminar el médico porque tiene citas " + estados
-//            );
-//        }
+		if (tieneReservasActivas(id)) {
+
+            String estados = EstadoReserva.EN_CURSO.getDescripcion();
+
+            throw new EntidadRelacionadaException(
+                "No se puede eliminar el huesped porque tiene una reserva " + estados
+            );
+        }
 		
 		log.info("Eliminando huesped con id: {}", id);
 		
@@ -166,9 +166,9 @@ public class HuespedServiceImpl implements HuespedService{
 			}
 		}
 		
-		 //private boolean tieneCitasActivas(Long medicoId) {
-		  //      return Boolean.TRUE.equals(citaClient.tieneCitasActivas(medicoId));
-		   // }
+		 private boolean tieneReservasActivas(Long huespedId) {
+		        return Boolean.TRUE.equals(reservacClient.huespedTieneReservasActivas(huespedId));
+		    }
 	   
 
 }

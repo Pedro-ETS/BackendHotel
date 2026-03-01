@@ -1,6 +1,5 @@
 package com.example.common.controller;
 
-
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,39 +13,38 @@ import java.util.List;
 
 @AllArgsConstructor
 @Validated
-
 public class CommonController <RQ, RS, S extends CrudServices<RQ, RS>> {
 	
-	 protected  final S service;
+	protected final S service;
 
-	    @GetMapping
-	    public ResponseEntity<List<RS>>listar(){
-	        return ResponseEntity.ok(service.listar());
-	    }
+	@GetMapping
+	public ResponseEntity<List<RS>> listar(){
+	    return ResponseEntity.ok(service.listar());
+	}
 
-	    @GetMapping("/{id}")
-	    public ResponseEntity<RS> obtenerPorID(
-	                @PathVariable @Positive(message = "El ID debe ser positivo") Long id){
-	        return ResponseEntity.ok(service.obtenerPorID(id));
-	    }
+	@GetMapping("/{id}")
+	public ResponseEntity<RS> obtenerPorID(
+	        @PathVariable @Positive(message = "El ID debe ser positivo") Long id){
+	    return ResponseEntity.ok(service.obtenerPorID(id));
+	}
 
-	    @PostMapping
-	    public ResponseEntity<RS> registrar(@Validated @RequestBody RQ request){
-	        return ResponseEntity.status(HttpStatus.CREATED).body(service.registrar(request));
-	    }
+	@PostMapping
+	public ResponseEntity<RS> registrar(@Validated @RequestBody RQ request){
+	    return ResponseEntity.status(HttpStatus.CREATED)
+	            .body(service.registrar(request));
+	}
 
-	    @PutMapping("/{id}")
-	    public ResponseEntity<RS> actualizar(
-	            @PathVariable @Positive(message = "El ID debe ser positivo") Long id,
-	            @Validated @RequestBody RQ request){
-	        return ResponseEntity.ok(service.actualizar(request, id));
-	    }
+	@PutMapping("/{id}")
+	public ResponseEntity<RS> actualizar(
+	        @PathVariable @Positive(message = "El ID debe ser positivo") Long id,
+	        @Validated @RequestBody RQ request){
+	    return ResponseEntity.ok(service.actualizar(request, id));
+	}
 
-	    @DeleteMapping("/{id}")
-	    public  ResponseEntity<Void> eliminar(
-	            @PathVariable @Positive(message = "El ID debe ser positivo") Long id){
-	        service.eliminar(id);
-	        return ResponseEntity.noContent().build();
-	    }
-
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> eliminar(
+	        @PathVariable @Positive(message = "El ID debe ser positivo") Long id){
+	    service.eliminar(id);
+	    return ResponseEntity.noContent().build();
+	}
 }

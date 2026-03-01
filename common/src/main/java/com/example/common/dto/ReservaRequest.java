@@ -1,8 +1,11 @@
 package com.example.common.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 
 public record ReservaRequest(
@@ -15,12 +18,14 @@ public record ReservaRequest(
     @Positive(message = "El ID de la habitación debe ser mayor a 0")
     Long idHabitacion,
 
-    @NotBlank(message = "La fecha de entrada es obligatoria")
-    @Pattern(regexp = "\\d{2}/\\d{2}/\\d{4}", message = "La fecha debe tener el formato dd/MM/yyyy")
-    String fechaEntrada,
+    @NotNull(message = "La fecha de entrada es requerida")
+	@FutureOrPresent(message = "La fecha de entrada debe ser futura")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm")
+	LocalDateTime fechaEntrada,
 
-    @NotBlank(message = "La fecha de salida es obligatoria")
-    @Pattern(regexp = "\\d{2}/\\d{2}/\\d{4}", message = "La fecha debe tener el formato dd/MM/yyyy")
-    String fechaSalida
+	@NotNull(message = "La fecha de salida es requerida")
+	@FutureOrPresent(message = "La fecha de salida debe ser futura")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm")
+	LocalDateTime fechaSalida
 
 ) {}
