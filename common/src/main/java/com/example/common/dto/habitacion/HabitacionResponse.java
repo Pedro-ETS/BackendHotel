@@ -1,4 +1,4 @@
-package com.example.common.dto;
+package com.example.common.dto.habitacion;
 
 import java.math.BigDecimal;
 

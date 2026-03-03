@@ -5,8 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-
-import com.example.common.dto.HabitacionResponse;
+import com.example.common.dto.habitacion.HabitacionResponse;
 
 
 @FeignClient(name = "habitaciones-mvs")

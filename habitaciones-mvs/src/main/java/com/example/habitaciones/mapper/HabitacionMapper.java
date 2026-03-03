@@ -1,9 +1,9 @@
 package com.example.habitaciones.mapper;
 
-import com.example.common.dto.HabitacionResponse;
+import com.example.common.dto.habitacion.HabitacionRequest;
+import com.example.common.dto.habitacion.HabitacionResponse;
 import com.example.common.enums.EstadoHabitacion;
 import com.example.common.enums.EstadoRegistro;
-import com.example.habitaciones.dtos.HabitacionRequest;
 import com.example.habitaciones.entities.Habitacion;
 import org.springframework.stereotype.Component;
 

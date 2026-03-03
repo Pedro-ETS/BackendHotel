@@ -1,4 +1,4 @@
-package com.example.habitaciones.dtos;
+package com.example.common.dto.habitacion;
 
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
