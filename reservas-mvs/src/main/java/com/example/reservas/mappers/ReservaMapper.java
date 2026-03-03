@@ -2,12 +2,12 @@ package com.example.reservas.mappers;
 
 import org.springframework.stereotype.Component;
 
-import com.example.common.dto.HabitacionDTO;
-import com.example.common.dto.HabitacionResponse;
-import com.example.common.dto.HuespedDTO;
-import com.example.common.dto.ReservaRequest;
-import com.example.common.dto.ReservaResponse;
+import com.example.common.dto.habitacion.HabitacionResponse;
 import com.example.common.dto.huesped.HuespedResponse;
+import com.example.common.dto.reservas.HabitacionDTO;
+import com.example.common.dto.reservas.HuespedDTO;
+import com.example.common.dto.reservas.ReservaRequest;
+import com.example.common.dto.reservas.ReservaResponse;
 import com.example.common.mapper.CommonMapper;
 import com.example.reservas.entities.Reserva;
 

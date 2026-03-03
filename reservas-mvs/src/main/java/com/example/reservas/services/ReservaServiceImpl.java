@@ -9,12 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.common.clients.HabitacionClient;
 import com.example.common.clients.HuespedClient;
-import com.example.common.dto.HabitacionDTO;
-import com.example.common.dto.HabitacionResponse;
-import com.example.common.dto.HuespedDTO;
-import com.example.common.dto.ReservaRequest;
-import com.example.common.dto.ReservaResponse;
+import com.example.common.dto.habitacion.HabitacionResponse;
 import com.example.common.dto.huesped.HuespedResponse;
+import com.example.common.dto.reservas.HabitacionDTO;
+import com.example.common.dto.reservas.HuespedDTO;
+import com.example.common.dto.reservas.ReservaRequest;
+import com.example.common.dto.reservas.ReservaResponse;
 import com.example.common.enums.EstadoHabitacion;
 import com.example.common.enums.EstadoRegistro;
 import com.example.common.enums.EstadoReserva;

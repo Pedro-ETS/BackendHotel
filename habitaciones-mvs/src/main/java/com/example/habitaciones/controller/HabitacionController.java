@@ -1,9 +1,9 @@
 package com.example.habitaciones.controller;
 
-import com.example.common.dto.HabitacionResponse;
-import com.example.habitaciones.dtos.HabitacionRequest;
 import com.example.habitaciones.services.HabitacionService;
 import com.example.common.controller.CommonController;
+import com.example.common.dto.habitacion.HabitacionRequest;
+import com.example.common.dto.habitacion.HabitacionResponse;
 
 import java.util.List;
 

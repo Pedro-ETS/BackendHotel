@@ -1,4 +1,4 @@
-package com.example.common.dto;
+package com.example.common.dto.reservas;
 
 import java.math.BigDecimal;
 

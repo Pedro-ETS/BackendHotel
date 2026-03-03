@@ -1,11 +1,11 @@
 package com.example.habitaciones.services;
 
 import com.example.common.clients.ReservaClient;
-import com.example.common.dto.HabitacionResponse;
+import com.example.common.dto.habitacion.HabitacionRequest;
+import com.example.common.dto.habitacion.HabitacionResponse;
 import com.example.common.enums.EstadoHabitacion;
 import com.example.common.enums.EstadoRegistro;
 import com.example.common.exceptions.EntidadRelacionadaException;
-import com.example.habitaciones.dtos.HabitacionRequest;
 import com.example.habitaciones.entities.Habitacion;
 import com.example.habitaciones.mapper.HabitacionMapper;
 import com.example.habitaciones.repositories.HabitacionRepository;
