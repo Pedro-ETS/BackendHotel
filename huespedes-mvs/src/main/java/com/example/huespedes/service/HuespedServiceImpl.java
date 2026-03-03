@@ -51,14 +51,12 @@ public class HuespedServiceImpl implements HuespedService{
     @Transactional(readOnly = true)
     public HuespedResponse obtenerHuespedPorIdSinEstado(Long id) {
 
-        log.info("Buscando huesped con el id: {}", id);
+    	log.info("Buscando huesped con el id: {}", id);
 
         return huespedMapper.entityToResponse(
                 huespedRepository.findById(id)
                         .orElseThrow(() ->
-                                new NoSuchElementException(
-                                        "Huesped no encontrado con el id: " + id))
-        );
+                        new NoSuchElementException("HUesped no encontrado con el id: " + id)));
     }
 
 	@Override

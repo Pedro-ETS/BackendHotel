@@ -11,7 +11,7 @@ public interface HabitacionService extends CrudServices<HabitacionRequest, Habit
     
     HabitacionResponse cambiarEstadoHabitacion(Long idHabitacion, Long idEstado);
     
-    HabitacionResponse actualizarEstadoInterno(Long idHabitacion, Long idEstado);
+    HabitacionResponse liberarHabitacionDesdeReserva(Long idHabitacion, Long idEstado);
     
     List<HabitacionResponse> listarDisponibles();
     

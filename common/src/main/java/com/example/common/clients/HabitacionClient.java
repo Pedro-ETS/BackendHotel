@@ -22,5 +22,10 @@ public interface HabitacionClient {
 	
 	@GetMapping("/habitacion/{idHabitacion}/tiene-activas")
 	Boolean habitacionTieneReservasActivas(@PathVariable Long idHabitacion);
+	
+	 //Endpoint que solo se usa para liberar la habitación al finalizar o cancelar una reserva.
+	@PatchMapping("/{id}/estado-interno/{idEstado}")
+	HabitacionResponse liberarHabitacionDesdeReserva(@PathVariable Long id,@PathVariable Long idEstado);
+	
 
 }

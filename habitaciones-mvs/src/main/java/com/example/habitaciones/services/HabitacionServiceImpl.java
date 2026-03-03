@@ -50,10 +50,12 @@ public class HabitacionServiceImpl implements HabitacionService {
     @Override
     @Transactional(readOnly = true)
     public HabitacionResponse obtenerHabitacionPorIdSinEstado(Long id) {
-        log.info("Buscando habitación sin estado con ID: {}", id);
-        Habitacion habitacion = habitacionRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("No se encontró habitación con ID: " + id));
-        return habitacionMapper.entityToResponse(habitacion);
+    	 log.info("Buscando habitacion con el id: {}", id);
+
+         return habitacionMapper.entityToResponse(
+                 habitacionRepository.findById(id)
+                         .orElseThrow(() ->
+                                 new NoSuchElementException("Habitación no encontrado con el id: " + id)));
     }
 
     @Override
@@ -88,40 +90,37 @@ public class HabitacionServiceImpl implements HabitacionService {
 
     @Override
     public HabitacionResponse cambiarEstadoHabitacion(Long idHabitacion, Long idEstado) {
-        log.info("Cambiando estado de habitación ID: {} a código: {}", idHabitacion, idEstado);
 
         Habitacion habitacion = habitacionRepository.findById(idHabitacion)
                 .filter(h -> h.getEstadoRegistro() == EstadoRegistro.ACTIVO)
-                .orElseThrow(() -> new NoSuchElementException("No se encontró habitación activa con ID: " + idHabitacion));
+                .orElseThrow(() ->
+                        new NoSuchElementException("No se encontró habitación activa con ID: " + idHabitacion));
 
         EstadoHabitacion nuevoEstado = EstadoHabitacion.fromCodigo(idEstado);
-        
-        if (habitacion.getEstadoHabitacion() == EstadoHabitacion.OCUPADA
-                && nuevoEstado == EstadoHabitacion.DISPONIBLE) {
+
+        if (habitacion.getEstadoHabitacion() == EstadoHabitacion.OCUPADA &&
+            nuevoEstado == EstadoHabitacion.DISPONIBLE) {
 
             throw new EntidadRelacionadaException(
-                    "No se puede cambiar la habitación a DISPONIBLE porque actualmente está OCUPADA");
+                    "No se puede cambiar manualmente a DISPONIBLE una habitación OCUPADA");
         }
-        
+
         habitacion.setEstadoHabitacion(nuevoEstado);
         habitacion = habitacionRepository.save(habitacion);
 
-        log.info("Estado de habitación {} cambiado a: {}", idHabitacion, nuevoEstado.getDescripcion());
         return habitacionMapper.entityToResponse(habitacion);
     }
 
     @Override
-    public HabitacionResponse actualizarEstadoInterno(Long idHabitacion, Long idEstado) {
-        log.info("Actualización interna de estado de habitación {}", idHabitacion);
+    public HabitacionResponse liberarHabitacionDesdeReserva(Long idHabitacion, Long idEstado) {
 
         Habitacion habitacion = habitacionRepository.findById(idHabitacion)
                 .orElseThrow(() -> new NoSuchElementException("No se encontró habitación con ID: " + idHabitacion));
 
         EstadoHabitacion nuevoEstado = EstadoHabitacion.fromCodigo(idEstado);
-        habitacion.setEstadoHabitacion(nuevoEstado);
-        habitacion = habitacionRepository.save(habitacion);
 
-        return habitacionMapper.entityToResponse(habitacion);
+        habitacion.setEstadoHabitacion(nuevoEstado);
+        return habitacionMapper.entityToResponse(habitacionRepository.save(habitacion));
     }
 
     @Override
@@ -174,16 +173,13 @@ public class HabitacionServiceImpl implements HabitacionService {
     }
 
     private void validarNumeroUnico(Integer numero, Long idExcluir) {
-        if (idExcluir == null) {
-            if (habitacionRepository.existsByNumeroAndEstadoRegistro(
-                    numero,
-                    EstadoRegistro.ACTIVO)) {
+          if (habitacionRepository.existsByNumeroAndEstadoRegistro(
+                numero,
+                EstadoRegistro.ACTIVO)) {
 
-                throw new EntidadRelacionadaException(
+            throw new EntidadRelacionadaException(
                         "Ya existe una habitación con el número: " + numero);
             }
-
-        } 
         else {
             if (habitacionRepository.existsByNumeroAndIdHabitacionNotAndEstadoRegistro(
                     numero,
