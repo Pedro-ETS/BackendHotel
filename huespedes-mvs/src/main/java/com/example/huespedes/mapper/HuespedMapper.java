@@ -9,11 +9,9 @@ import com.example.common.enums.EstadoRegistro;
 import com.example.common.mapper.CommonMapper;
 import com.example.huespedes.entity.Huesped;
 
-import lombok.Builder;
 
 
 @Component
-@Builder
 public class HuespedMapper implements CommonMapper <HuespedRequest, HuespedResponse, Huesped>{
 
 	@Override

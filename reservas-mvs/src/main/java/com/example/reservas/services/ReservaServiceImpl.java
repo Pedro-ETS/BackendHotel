@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ReservaServiceImpl implements ReservaService {
 
@@ -36,10 +37,7 @@ public class ReservaServiceImpl implements ReservaService {
     private final HuespedClient huespedClient;
     private final HabitacionClient habitacionClient;
 
-    private static final Long DISPONIBLE = 1L;
-    private static final Long OCUPADA = 2L;
 
-    // ========================= LISTAR =========================
 
     @Override
     @Transactional(readOnly = true)
@@ -61,16 +59,10 @@ public class ReservaServiceImpl implements ReservaService {
                     HabitacionDTO habitacionDTO =
                             reservaMapper.toHabitacionDTO(habitacionResponse);
 
-                    return reservaMapper.entityToResponse(
-                            reserva,
-                            huespedDTO,
-                            habitacionDTO
-                    );
+                    return reservaMapper.entityToResponse(reserva,huespedDTO,habitacionDTO);
                 })
                 .toList();
     }
-
-    // ========================= OBTENER =========================
 
     @Override
     @Transactional(readOnly = true)
@@ -79,23 +71,13 @@ public class ReservaServiceImpl implements ReservaService {
         Reserva reserva = getReservaActivaOrThrow(id);
 
         HuespedDTO huespedDTO =
-                reservaMapper.toHuespedDTO(
-                        huespedClient.obtenerHuespedPorId(reserva.getIdHuesped())
-                );
+                reservaMapper.toHuespedDTO(huespedClient.obtenerHuespedPorId(reserva.getIdHuesped()));
 
         HabitacionDTO habitacionDTO =
-                reservaMapper.toHabitacionDTO(
-                        habitacionClient.obtenerHabitacionPorId(reserva.getIdHabitacion())
-                );
+                reservaMapper.toHabitacionDTO(habitacionClient.obtenerHabitacionPorId(reserva.getIdHabitacion()));
 
-        return reservaMapper.entityToResponse(
-                reserva,
-                huespedDTO,
-                habitacionDTO
-        );
+        return reservaMapper.entityToResponse(reserva,huespedDTO,habitacionDTO);
     }
-
-    // ========================= REGISTRAR =========================
 
     @Override
     @Transactional
@@ -103,34 +85,27 @@ public class ReservaServiceImpl implements ReservaService {
 
         validarFechas(request.fechaEntrada(), request.fechaSalida());
 
-        // 🔹 Validar huésped activo
         HuespedResponse huespedResponse =
                 huespedClient.obtenerHuespedPorId(request.idHuesped());
 
-        if (huespedResponse == null ||
-            huespedResponse.estado() != EstadoRegistro.ACTIVO) {
+        if (huespedResponse.estado() != EstadoRegistro.ACTIVO) {
+
             throw new EntidadRelacionadaException("El huésped no está activo");
         }
 
-        // 🔹 Validar habitación activa y disponible
         HabitacionResponse habitacionResponse =
                 habitacionClient.obtenerHabitacionPorId(request.idHabitacion());
 
-        if (habitacionResponse == null ||
-            habitacionResponse.estadoRegistro() != EstadoRegistro.ACTIVO) {
+        if (habitacionResponse.estadoRegistro() != EstadoRegistro.ACTIVO) {
+
             throw new EntidadRelacionadaException("La habitación no está activa");
         }
 
         if (!EstadoHabitacion.DISPONIBLE.name()
                 .equals(habitacionResponse.estadoHabitacion())) {
+
             throw new EntidadRelacionadaException("La habitación no está disponible");
         }
-
-        HuespedDTO huespedDTO =
-                reservaMapper.toHuespedDTO(huespedResponse);
-
-        HabitacionDTO habitacionDTO =
-                reservaMapper.toHabitacionDTO(habitacionResponse);
 
         Reserva reserva = reservaMapper.requestToEntity(request);
         reserva.setEstadoReserva(EstadoReserva.CONFIRMADA);
@@ -138,55 +113,35 @@ public class ReservaServiceImpl implements ReservaService {
 
         Reserva guardada = reservaRepository.save(reserva);
 
-        // Cambiar habitación a OCUPADA
         habitacionClient.cambiarEstadoHabitacion(
-                request.idHabitacion(),
-                OCUPADA
-        );
+                request.idHabitacion(),EstadoHabitacion.OCUPADA.getCodigo());
 
-        return reservaMapper.entityToResponse(
-                guardada,
-                huespedDTO,
-                habitacionDTO
-        );
+        return obtenerPorID(guardada.getId());
     }
     
     @Override
-    @Transactional
     public ReservaResponse actualizar(ReservaRequest request, Long id) {
-
-        if (request == null) {
-            throw new EntidadRelacionadaException("La reserva es obligatoria");
-        }
 
         Reserva reserva = getReservaActivaOrThrow(id);
 
-        // ❌ No modificar si está FINALIZADA o CANCELADA
         if (reserva.getEstadoReserva() == EstadoReserva.FINALIZADA ||
             reserva.getEstadoReserva() == EstadoReserva.CANCELADA) {
 
-            throw new EntidadRelacionadaException(
-                    "No se puede modificar una reserva finalizada o cancelada");
+            throw new EntidadRelacionadaException("No se puede modificar una reserva finalizada o cancelada");
         }
 
-        // ❌ No permitir cambiar huésped
         if (!reserva.getIdHuesped().equals(request.idHuesped())) {
-            throw new EntidadRelacionadaException(
-                    "No se puede cambiar el huésped de la reserva");
+            throw new EntidadRelacionadaException("No se puede cambiar el huésped de la reserva");
         }
 
-        // ❌ No permitir cambiar habitación
         if (!reserva.getIdHabitacion().equals(request.idHabitacion())) {
-            throw new EntidadRelacionadaException(
-                    "No se puede cambiar la habitación de la reserva");
+            throw new EntidadRelacionadaException("No se puede cambiar la habitación de la reserva");
         }
 
-        // ❌ Si está EN_CURSO no puede cambiar fecha de entrada
         if (reserva.getEstadoReserva() == EstadoReserva.EN_CURSO &&
             !reserva.getFechaEntrada().equals(request.fechaEntrada())) {
 
-            throw new EntidadRelacionadaException(
-                    "No se puede modificar la fecha de entrada después del check-in");
+            throw new EntidadRelacionadaException("No se puede modificar la fecha de entrada después del check-in");
         }
 
         validarFechas(request.fechaEntrada(), request.fechaSalida());
@@ -198,68 +153,51 @@ public class ReservaServiceImpl implements ReservaService {
         return obtenerPorID(actualizada.getId());
     }
 
-    // ========================= CAMBIAR ESTADO =========================
 
     @Override
-    @Transactional
     public ReservaResponse cambiarEstado(Long idReserva, Integer idEstado) {
 
         Reserva reserva = getReservaActivaOrThrow(idReserva);
 
-        EstadoReserva estadoNuevo =
-                EstadoReserva.fromCodigo(idEstado.longValue());
+        EstadoReserva estadoNuevo =EstadoReserva.fromCodigo(idEstado.longValue());
 
         validarTransicion(reserva.getEstadoReserva(), estadoNuevo);
 
         reserva.setEstadoReserva(estadoNuevo);
-        reservaRepository.save(reserva);
+        
 
         if (estadoNuevo == EstadoReserva.FINALIZADA ||
             estadoNuevo == EstadoReserva.CANCELADA) {
 
-            habitacionClient.cambiarEstadoHabitacion(
-                    reserva.getIdHabitacion(),
-                    DISPONIBLE
-            );
+        	habitacionClient.liberarHabitacionDesdeReserva(
+                    reserva.getIdHabitacion(),EstadoHabitacion.DISPONIBLE.getCodigo());
         }
 
+        reservaRepository.save(reserva);
         return obtenerPorID(reserva.getId());
     }
     
- // ========================= ELIMINAR =========================
 
     @Override
-    @Transactional
     public void eliminar(Long id) {
-
-        if (id == null) {
-            throw new EntidadRelacionadaException("El id de la reserva es obligatorio");
-        }
 
         Reserva reserva = getReservaActivaOrThrow(id);
 
-        if (reserva.getEstadoReserva() == EstadoReserva.EN_CURSO ||
-            reserva.getEstadoReserva() == EstadoReserva.FINALIZADA) {
+        if (reserva.getEstadoReserva() == EstadoReserva.EN_CURSO) {
 
-            throw new EntidadRelacionadaException(
-                    "No se puede eliminar una reserva EN_CURSO o FINALIZADA");
+            throw new EntidadRelacionadaException("No se puede eliminar una reserva que se encuentra en curso");
         }
 
-        // Si estaba confirmada, liberar habitación
         if (reserva.getEstadoReserva() == EstadoReserva.CONFIRMADA) {
 
-            habitacionClient.cambiarEstadoHabitacion(
-                    reserva.getIdHabitacion(),
-                    DISPONIBLE
-            );
+            habitacionClient.liberarHabitacionDesdeReserva(
+                    reserva.getIdHabitacion(),EstadoHabitacion.DISPONIBLE.getCodigo());
         }
 
         reserva.setEstadoRegistro(EstadoRegistro.ELIMINADO);
-
         reservaRepository.save(reserva);
     }
 
-    // ========================= VALIDACIONES EXTERNAS =========================
 
     @Override
     @Transactional(readOnly = true)
@@ -269,37 +207,29 @@ public class ReservaServiceImpl implements ReservaService {
                 .existsByIdHuespedAndEstadoReservaInAndEstadoRegistro(
                         idHuesped,
                         List.of(EstadoReserva.CONFIRMADA, EstadoReserva.EN_CURSO),
-                        EstadoRegistro.ACTIVO
-                );
+                        EstadoRegistro.ACTIVO);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Boolean habitacionTieneReservasActivas(Long idHabitacion) {
-
         return reservaRepository
                 .existsByIdHabitacionAndEstadoReservaInAndEstadoRegistro(
                         idHabitacion,
                         List.of(EstadoReserva.CONFIRMADA, EstadoReserva.EN_CURSO),
-                        EstadoRegistro.ACTIVO
-                );
+                        EstadoRegistro.ACTIVO);
     }
-
-    // ========================= MÉTODOS PRIVADOS =========================
 
     private Reserva getReservaActivaOrThrow(Long id) {
         return reservaRepository.findByIdAndEstadoRegistro(id, EstadoRegistro.ACTIVO)
-                .orElseThrow(() ->
-                        new NoSuchElementException("Reserva no encontrada"));
+                .orElseThrow(() ->new NoSuchElementException("Reserva no encontrada"));
     }
 
     private void validarFechas(LocalDateTime entrada, LocalDateTime salida) {
 
-        if (entrada == null || salida == null ||
-            !entrada.isBefore(salida)) {
+        if (!entrada.isBefore(salida)) {
 
-            throw new EntidadRelacionadaException(
-                    "La fecha de entrada debe ser anterior a la fecha de salida");
+            throw new IllegalArgumentException("La fecha de entrada debe ser anterior a la fecha de salida");
         }
     }
 
@@ -318,8 +248,7 @@ public class ReservaServiceImpl implements ReservaService {
         };
 
         if (!valida) {
-            throw new EntidadRelacionadaException(
-                    "Transición de estado inválida");
+            throw new EntidadRelacionadaException("Transición de estado inválida");
         }
     }
 }

@@ -32,6 +32,7 @@ public class HabitacionController extends CommonController<HabitacionRequest, Ha
         return super.eliminar(id);
     }
     
+    
     @PatchMapping("/{id}/estado/{idEstado}")
     public ResponseEntity<HabitacionResponse> cambiarEstado(	
             @PathVariable Long id,
@@ -43,5 +44,11 @@ public class HabitacionController extends CommonController<HabitacionRequest, Ha
 	public ResponseEntity<HabitacionResponse> obtenerHabitacionPorIdSinEstado	(@PathVariable Long id){
 		return ResponseEntity.ok(service.obtenerHabitacionPorIdSinEstado(id));
 	}
+    
+    //Endpoint que solo se usa para liberar la habitación al finalizar o cancelar una reserva.
+    @PatchMapping("/{id}/estado-interno/{idEstado}")
+    public ResponseEntity<HabitacionResponse> liberarHabitacionDesdeReserva(@PathVariable Long id,@PathVariable Long idEstado) {
+        return ResponseEntity.ok(((HabitacionService) service).liberarHabitacionDesdeReserva(id, idEstado));
+    }
     
 }
