@@ -5,7 +5,10 @@ import com.example.habitaciones.dtos.HabitacionRequest;
 import com.example.habitaciones.services.HabitacionService;
 import com.example.common.controller.CommonController;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,6 +16,20 @@ public class HabitacionController extends CommonController<HabitacionRequest, Ha
 
     public HabitacionController(HabitacionService service) {
         super(service);
+        
+    } 
+    public ResponseEntity<List<HabitacionResponse>> listar() {
+        return super.listar();
+    }
+
+
+    public ResponseEntity<HabitacionResponse> registrar(@RequestBody HabitacionRequest request) {
+        return super.registrar(request);
+    }
+    
+   
+    public ResponseEntity<Void> eliminar(Long id) {
+        return super.eliminar(id);
     }
     
     
@@ -22,9 +39,9 @@ public class HabitacionController extends CommonController<HabitacionRequest, Ha
             @PathVariable Long idEstado) {
         return ResponseEntity.ok(service.cambiarEstadoHabitacion(id, idEstado));
     }
-    
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/id-habitacion/{id}")
-	public ResponseEntity<HabitacionResponse> obtenerHabitacionPorIdSinEstado(@PathVariable Long id){
+	public ResponseEntity<HabitacionResponse> obtenerHabitacionPorIdSinEstado	(@PathVariable Long id){
 		return ResponseEntity.ok(service.obtenerHabitacionPorIdSinEstado(id));
 	}
     
