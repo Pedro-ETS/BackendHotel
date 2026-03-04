@@ -173,6 +173,7 @@ public class HabitacionServiceImpl implements HabitacionService {
     }
 
     private void validarNumeroUnico(Integer numero, Long idExcluir) {
+    	if (idExcluir == null) {
           if (habitacionRepository.existsByNumeroAndEstadoRegistro(
                 numero,
                 EstadoRegistro.ACTIVO)) {
@@ -180,7 +181,7 @@ public class HabitacionServiceImpl implements HabitacionService {
             throw new EntidadRelacionadaException(
                         "Ya existe una habitación con el número: " + numero);
             }
-        else {
+    	}else {
             if (habitacionRepository.existsByNumeroAndIdHabitacionNotAndEstadoRegistro(
                     numero,
                     idExcluir,
